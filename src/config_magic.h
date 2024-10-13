@@ -147,7 +147,8 @@ enum ShotModelFlags {
     ShMF_NeverBlock     = 0x10000,
 };
 
-enum PowerCanCastFlags {
+enum PowerCanCastFlags : uint64_t
+{
     PwCast_None          = 0x0000000000,
     /** Allow casting the spell on enemy creatures kept in custody. */
     PwCast_CustodyCrtrs  = 0x0000000001,

@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 /******************************************************************************/
-enum cpuid_requests {
+enum cpuid_requests : uint64_t {
   CPUID_GETVENDORSTRING,
   CPUID_GETFEATURES,
   CPUID_GETTLB,
@@ -42,7 +42,7 @@ enum cpuid_requests {
 };
 
 // When called with CPUID_GETFEATURES, CPUID returns a bit field containing the following values.
-enum {
+enum : uint64_t {
     CPUID_FEAT_ECX_SSE3         = 1 << 0,
     CPUID_FEAT_ECX_PCLMUL       = 1 << 1,
     CPUID_FEAT_ECX_DTES64       = 1 << 2,
@@ -97,7 +97,7 @@ enum {
     CPUID_FEAT_EDX_HTT          = 1 << 28,
     CPUID_FEAT_EDX_TM1          = 1 << 29,
     CPUID_FEAT_EDX_IA64         = 1 << 30,
-    CPUID_FEAT_EDX_PBE          = 1 << 31
+    CPUID_FEAT_EDX_PBE          = 1ULL << 31
 };
 
 enum {

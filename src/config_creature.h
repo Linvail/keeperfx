@@ -62,7 +62,8 @@ enum CreatureModelFlags {
     CMF_Fat              = 0x40000, // Creature to fat too walk a full animation
 };
 
-enum CreatureJobFlags {
+enum CreatureJobFlags : uint64_t
+{
     Job_NULL             = 0LL,
     Job_TUNNEL           = 1LL<<0,
     Job_DIG              = 1LL<<1,
