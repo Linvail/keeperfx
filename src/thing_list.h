@@ -93,7 +93,8 @@ enum CreatureSelectCriteria {
 /**
  * Flags which determine which target things can be hit by something.
  */
-enum HitTargetFlagsList {
+enum HitTargetFlagsList : uint64_t
+{
     HitTF_None                = 0x0000000000000000,//!< Zero flag
     HitTF_EnemyCreatures      = 0x0000000000000001,//!< Allow targeting enemy creatures.
     HitTF_AlliedCreatures     = 0x0000000000000002,//!< Allow targeting allied and neutral creatures.

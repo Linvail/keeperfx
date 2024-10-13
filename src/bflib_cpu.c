@@ -23,6 +23,10 @@
 #include "bflib_basics.h"
 #include "post_inc.h"
 
+#ifndef asm
+    #define asm __asm__
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

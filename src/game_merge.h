@@ -109,7 +109,8 @@ enum ClassicBugFlags {
     ClscBug_ListEnd                       = 0x4000,
 };
 
-enum GameFlags2 {
+enum GameFlags2 : uint64_t
+{
     GF2_ClearPauseOnSync          = 0x0001,
     GF2_ClearPauseOnPacket        = 0x0002,
     GF2_Timer                     = 0x0004,
