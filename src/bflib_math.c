@@ -690,7 +690,7 @@ static long bitScanReverse(long s)
 {
   unsigned long source = (unsigned long)s;
 #if defined(_MSC_VER)
-    DWORD i;
+    unsigned long i;
     uint8_t success = _BitScanReverse(&i, source);
     return success != 0 ? i : -1;
 #elif defined(__GNUC__)
@@ -831,7 +831,7 @@ long LbDiagonalLength(long a, long b)
     return (tmpval >> 13);
 }
 
-float lerp(float a, float b, float f) 
+float lerp(float a, float b, float f)
 {
     return (a * (1.0 - f)) + (b * f);
 }
