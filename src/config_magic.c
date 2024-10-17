@@ -202,7 +202,7 @@ const struct NamedCommand shotmodel_properties_commands[] = {
   };
 
 const struct LongNamedCommand powermodel_castability_commands[] = {
-  {"CUSTODY_CRTRS",    PwCast_CustodyCrtrs},
+  {"CUSTODY_CRTRS",    PwCast_CreatureInCustody},
   {"OWNED_CRTRS",      PwCast_OwnedCrtrs},
   {"ALLIED_CRTRS",     PwCast_AlliedCrtrs},
   {"ENEMY_CRTRS",      PwCast_EnemyCrtrs},
@@ -230,16 +230,16 @@ const struct LongNamedCommand powermodel_castability_commands[] = {
   {"UNREVEALED",       PwCast_Unrevealed},
   {"REVEALED_TEMP",    PwCast_RevealedTemp},
   {"THING_OR_MAP",     PwCast_ThingOrMap},
-  {"ONLY_DIGGERS",     PwCast_DiggersOnly},
-  {"NO_DIGGERS",       PwCast_DiggersNot},
+  {"ONLY_DIGGERS",     PwCast_CreatureDigger},
+  {"NO_DIGGERS",       PwCast_CreatureNonDigger},
   {"ANYWHERE",         PwCast_Anywhere},
-  {"ALL_CRTRS",        PwCast_AllCrtrs},
-  {"ALL_FOOD",         PwCast_AllFood},
-  {"ALL_GOLD",         PwCast_AllGold},
+  {"ALL_CRTRS",        PwCast_Creature},
+  {"ALL_FOOD",         PwCast_Food},
+  {"ALL_GOLD",         PwCast_Gold},
   {"ALL_THINGS",       PwCast_AllThings},
-  {"ALL_GROUND",       PwCast_AllGround},
+  {"ALL_GROUND",       PwCast_Ground},
   {"NOT_ENEMY_GROUND", PwCast_NotEnemyGround},
-  {"ALL_TALL",         PwCast_AllTall},
+  {"ALL_TALL",         PwCast_Tall},
   {NULL,                0},
   };
 
@@ -459,7 +459,7 @@ TbBool parse_magic_spell_blocks(char *buf, long len, const char *config_textname
             spconf->spell_flags = 0;
         }
     }
-    
+
   // Load the file
   arr_size = game.conf.magic_conf.spell_types_count;
   for (i=0; i < arr_size; i++)
@@ -822,7 +822,7 @@ TbBool parse_magic_shot_blocks(char *buf, long len, const char *config_textname,
                 COMMAND_TEXT(cmd_num),block_buf,config_textname);
             break;
           }
-          if (shot_desc[i].name == NULL) 
+          if (shot_desc[i].name == NULL)
           {
               shot_desc[i].name = shotst->code_name;
               shot_desc[i].num = i;
@@ -1178,7 +1178,7 @@ TbBool parse_magic_shot_blocks(char *buf, long len, const char *config_textname,
               CONFWRNLOG("Couldn't read \"%s\" parameter in [%s] block of %s file.",
                   COMMAND_TEXT(cmd_num), block_buf, config_textname);
           }
-          break; 
+          break;
       case 21: //VISUALEFFECT
           if (get_conf_parameter_single(buf, &pos, len, word_buf, sizeof(word_buf)) > 0)
           {
@@ -2284,7 +2284,7 @@ TbBool parse_magic_special_blocks(char *buf, long len, const char *config_textna
         game.conf.object_conf.object_to_special_artifact[i] = 0;
     }
   }
-  
+
   arr_size = game.conf.magic_conf.special_types_count;
   // Load the file
   for (i=0; i < arr_size; i++)
@@ -2417,7 +2417,7 @@ TbBool load_magic_config_file(const char *textname, const char *fname, unsigned 
     char* buf = (char*)LbMemoryAlloc(len + 256);
     if (buf == NULL)
         return false;
-    
+
     game.conf.magic_conf.spell_types_count = MAGIC_ITEMS_MAX;
     game.conf.magic_conf.shot_types_count = MAGIC_ITEMS_MAX;
     game.conf.magic_conf.power_types_count = MAGIC_ITEMS_MAX;

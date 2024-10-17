@@ -467,7 +467,7 @@ void activate_trap_effect_on_trap(struct Thing *traptng)
     shot_origin.y.val += distance_with_angle_to_coord_y(trapstat->shot_shift_y, traptng->move_angle_xy);
     shot_origin.z.val += trapstat->shot_shift_z;
     struct Thing* efftng = create_effect(&shot_origin, trapstat->created_itm_model, traptng->owner);
-    if (!thing_is_invalid(efftng)) 
+    if (!thing_is_invalid(efftng))
     {
         efftng->shot_effect.hit_type = trapstat->hit_type;
         efftng->parent_idx = traptng->index;
@@ -565,15 +565,15 @@ struct Thing *activate_trap_spawn_creature(struct Thing *traptng, unsigned char 
 void activate_trap_god_spell(struct Thing *traptng, struct Thing *creatng, PowerKind pwkind)
 {
     struct PowerConfigStats *powerst = get_power_model_stats(pwkind);
-    if (powerst->can_cast_flags & PwCast_AllThings)
+    if (flag_is_set(powerst->can_cast_flags, PwCast_AllThings))
     {
         magic_use_power_on_thing(traptng->owner, pwkind, SPELL_MAX_LEVEL, creatng->mappos.x.stl.num, creatng->mappos.y.stl.num, creatng, PwMod_CastForFree);
     }
-    else if (powerst->can_cast_flags & PwCast_AllGround)
+    else if (flag_is_set(powerst->can_cast_flags, PwCast_Ground))
     {
         magic_use_power_on_subtile(traptng->owner, pwkind, SPELL_MAX_LEVEL, creatng->mappos.x.stl.num, creatng->mappos.y.stl.num, PwMod_CastForFree);
     }
-    else if (powerst->can_cast_flags & PwCast_Anywhere)
+    else if (flag_is_set(powerst->can_cast_flags, PwCast_Anywhere))
     {
         magic_use_power_on_level(traptng->owner, pwkind, SPELL_MAX_LEVEL, PwMod_CastForFree);
     }
@@ -1024,16 +1024,16 @@ unsigned long remove_trap(struct Thing *traptng, long *sell_value)
             destroy_trap(traptng);
         }
         total++;
-    } 
-    return total;        
+    }
+    return total;
 }
- 
+
 unsigned long remove_trap_on_subtile(MapSubtlCoord stl_x, MapSubtlCoord stl_y, long *sell_value)
 {
     struct Thing* traptng = get_trap_for_position(stl_x, stl_y);
     return remove_trap(traptng, sell_value);
 }
- 
+
 unsigned long remove_traps_around_subtile(MapSubtlCoord stl_x, MapSubtlCoord stl_y, long *sell_value)
 {
     unsigned long total = 0;
@@ -1163,7 +1163,7 @@ void trap_fire_shot_without_target(struct Thing *firing, ThingModel shot_model, 
         case ShFL_Beam:
         {
             struct Coord3d pos2;
-            long damage;      
+            long damage;
             // Prepare source position
             struct Coord3d pos1;
             pos1.x.val = firing->mappos.x.val;

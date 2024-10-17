@@ -94,35 +94,63 @@ enum CreatureSelectCriteria {
  * Flags which determine which target things can be hit by something.
  */
 enum HitTargetFlagsList {
-    HitTF_None                = 0x0000000000000000,//!< Zero flag
-    HitTF_EnemyCreatures      = 0x0000000000000001,//!< Allow targeting enemy creatures.
-    HitTF_AlliedCreatures     = 0x0000000000000002,//!< Allow targeting allied and neutral creatures.
-    HitTF_OwnedCreatures      = 0x0000000000000004,//!< Allow targeting owned creatures.
-    HitTF_ArmourAffctdCreatrs = 0x0000000000000008,//!< Allow targeting creatures affected by Armour spell.
-    HitTF_PreventDmgCreatrs   = 0x0000000000000010,//!< Allow targeting creatures with damage prevention flag, ie unconscious.
-    HitTF_EnemyShotsCollide   = 0x0000000000000400,//!< Allow colliding with enemy shots which can be collided with.
-    HitTF_AlliedShotsCollide  = 0x0000000000000800,//!< Allow colliding with allied and neutral shots which can be collided with.
-    HitTF_OwnedShotsCollide   = 0x0000000000001000,//!< Allow colliding with own shots which can be collided with.
-    HitTF_EnemySoulContainer  = 0x0000000000002000,//!< Allow targeting enemy soul containers.
-    HitTF_AlliedSoulContainer = 0x0000000000004000,//!< Allow targeting allied and neutral containers.
-    HitTF_OwnedSoulContainer  = 0x0000000000008000,//!< Allow targeting own soul container.
-    HitTF_AnyWorkshopBoxes    = 0x0000000000040000,//!< Allow targeting Workshop boxes owned by anyone.
-    HitTF_AnySpellbooks       = 0x0000000000080000,//!< Allow targeting spellbook objects owned by anyone.
-    HitTF_AnyDnSpecialBoxes   = 0x0000000000100000,//!< Allow targeting Dnungeon Special boxes owned by anyone.
-    HitTF_AnyGoldHoards       = 0x0000000000200000,//!< Allow targeting Gold Hoards owned by anyone.
-    HitTF_AnyFoodObjects      = 0x0000000000400000,//!< Allow targeting Food Objects owned by anyone.
-    HitTF_AnyGoldPiles        = 0x0000000000800000,//!< Allow targeting gold laying on ground before storing in treasury, pots and piles.
-    HitTF_AnyDecorations      = 0x0000000001000000,//!< Allow targeting things which are not used for anything, ie potions and barrels.
-    HitTF_EnemyDeployedDoors  = 0x0000000002000000,//!< Allow targeting Enemy Deployed Doors.
-    HitTF_AlliedDeployedDoors = 0x0000000004000000,//!< Allow targeting Allied and neutral Deployed Doors.
-    HitTF_OwnedDeployedDoors  = 0x0000000008000000,//!< Allow targeting Owned Deployed Doors.
-    HitTF_EnemyDeployedTraps  = 0x0000000010000000,//!< Allow targeting enemy Deployed Traps.
-    HitTF_AlliedDeployedTraps = 0x0000000020000000,//!< Allow targeting allied and neutral deployed Traps.
-    HitTF_OwnedDeployedTraps  = 0x0000000040000000,//!< Allow targeting Owned Deployed Traps.
-    HitTF_CreatureDeadBodies  = 0x0000000080000000,//!< Allow targeting Creature Dead Bodies.
-    HitTF_EnemyDestructibleTraps  = 0x0000000100000000,//!< Allow targeting enemy Deployed Traps.
-    HitTF_AlliedDestructibleTraps = 0x0000000200000000,//!< Allow targeting allied and neutral deployed Traps.
-    HitTF_OwnedDestructibleTraps  = 0x0000000400000000,//!< Allow targeting Owned Deployed Traps.
+    HitTF_None = 1ULL << 0,//!< Zero flag
+    HitTF_Creature = 1ULL << 1, //!< Creature type thing.
+    HitTF_Shot = 1ULL << 2, //!< Shot that ca be collided with.
+    HitTF_SoulContainer = 1ULL << 3,
+    HitTF_WorkshopBox = 1ULL << 4, //!< Allow targeting Workshop boxes owned by anyone.
+    HitTF_Spellbook = 1ULL << 5, //!< Allow targeting spell book objects owned by anyone.
+    HitTF_SpecialBox = 1ULL << 6, //!< Allow targeting Dungeon Special boxes owned by anyone.
+    HitTF_GoldHoard = 1ULL << 7, //!< Allow targeting Gold Hoards owned by anyone.
+    HitTF_GoldPile = 1ULL << 8, //!< Allow targeting gold laying on ground before storing in treasury, pots and piles.
+    HitTF_Food = 1ULL << 9, //!< Food type thing.
+    HitTF_Decoration = 1ULL << 10, //!< Allow targeting things which are not used for anything, ie potions and barrels.
+    HitTF_Door = 1ULL << 11, //!< Door type thing.
+    HitTF_Trap = 1ULL << 12, //!< Trap type thing.
+    HitTF_Destructible = 1ULL << 13, //!< Currently only used to describe trap.
+
+    HitTF_Neutral = 1ULL << 14, //!< Ownership belongs to neutral player.
+    HitTF_Allied = 1ULL << 15, //!< Ownership belongs to allied player.
+    HitTF_Owned = 1ULL << 16, //!< Ownership belongs to own player.
+    HitTF_Enemy = 1ULL << 17, //!< Ownership belongs to enemy player.
+
+    HitTF_ArmourAffected = 1ULL << 18, //!< Allow targeting Armour affected thing, usually creature.
+    HitTF_PreventDamage = 1ULL << 19,  //!< Allow targeting thing that don't take damage, like unconscious creature.
+    HitTF_Dead = 1ULL << 20,           //!< Allow targeting dead thing, usually creature.
+
+    HitTF_CreatureAllied = HitTF_Creature | HitTF_Allied,//!< Allow targeting allied and neutral creatures.
+    HitTF_CreatureEnemy = HitTF_Creature | HitTF_Enemy,//!< Allow targeting enemy creatures.
+    HitTF_CreatureOwned = HitTF_Creature | HitTF_Owned,//!< Allow targeting owned creatures.
+    HitTF_CreatureAllOwners = HitTF_Creature | HitTF_Allied | HitTF_Enemy | HitTF_Owned,
+
+    HitTF_ArmourAffctdCreatrs = HitTF_Creature | HitTF_ArmourAffected,//!< Allow targeting creatures affected by Armour spell.
+    HitTF_PreventDmgCreatrs = HitTF_Creature | HitTF_PreventDamage,//!< Allow targeting creatures with damage prevention flag, ie unconscious.
+    HitTF_CreatureDeadBodies = HitTF_Creature | HitTF_Dead,//!< Allow targeting Creature Dead Bodies.
+
+    HitTF_ShotEnemy = HitTF_Shot | HitTF_Enemy,//!< Allow colliding with enemy shots which can be collided with.
+    HitTF_ShotAllied = HitTF_Shot | HitTF_Allied,//!< Allow colliding with allied and neutral shots which can be collided with.
+    HitTF_ShotOwned = HitTF_Shot | HitTF_Owned,//!< Allow colliding with own shots which can be collided with.
+    HitTF_ShotAllOwners = HitTF_Shot | HitTF_Enemy | HitTF_Allied | HitTF_Owned,
+
+    HitTF_SoulContainerEnemy = HitTF_SoulContainer | HitTF_Enemy,//!< Allow targeting enemy soul containers.
+    HitTF_SoulContainerAllied = HitTF_SoulContainer | HitTF_Allied,//!< Allow targeting allied and neutral containers.
+    HitTF_SoulContainerOwned = HitTF_SoulContainer | HitTF_Owned,//!< Allow targeting own soul container.
+    HitTF_SoulContainerAllOwners = HitTF_SoulContainer | HitTF_Enemy | HitTF_Allied | HitTF_Owned,
+
+    HitTF_DoorEnemy = HitTF_Door | HitTF_Enemy,//!< Allow targeting Enemy Deployed Doors.
+    HitTF_DoorAllied = HitTF_Door | HitTF_Allied,//!< Allow targeting Allied and neutral Deployed Doors.
+    HitTF_DoorOwned = HitTF_Door | HitTF_Owned,//!< Allow targeting Owned Deployed Doors.
+    HitTF_DoorAllOwners = HitTF_Door | HitTF_Enemy | HitTF_Allied | HitTF_Owned,
+
+    HitTF_TrapEnemy = HitTF_Trap | HitTF_Enemy,//!< Allow targeting enemy Deployed Traps.
+    HitTF_TrapAllied = HitTF_Trap | HitTF_Allied,//!< Allow targeting allied and neutral deployed Traps.
+    HitTF_TrapOwned = HitTF_Trap | HitTF_Owned,//!< Allow targeting Owned Deployed Traps.
+    HitTF_TrapAllOwners = HitTF_Trap | HitTF_Enemy | HitTF_Allied | HitTF_Owned,
+
+    HitTF_TrapEnemyDestructible = HitTF_TrapEnemy | HitTF_Destructible,//!< Allow targeting enemy Deployed Traps.
+    HitTF_TrapAlliedDestructible = HitTF_TrapAllied | HitTF_Destructible,//!< Allow targeting allied and neutral deployed Traps.
+    HitTF_TrapOwnedDestructible = HitTF_TrapOwned | HitTF_Destructible,//!< Allow targeting Owned Deployed Traps.
+    HitTF_TrapDestructibleAllOwners = HitTF_TrapAllOwners | HitTF_Destructible
 };
 
 /******************************************************************************/

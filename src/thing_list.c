@@ -1614,9 +1614,9 @@ struct Thing *find_random_thing_in_room(ThingClass tngclass, ThingModel tngmodel
     {
         current_slb = get_next_slab_number_in_room(current_slb);
     }
-        
+
     static const int STL_PER_SLB_2D = STL_PER_SLB * STL_PER_SLB;
-    
+
     for (size_t i = 0; i < room->slabs_count; i++)
     {
         if ( room->slabs_count == current_slab_idx )
@@ -1627,7 +1627,7 @@ struct Thing *find_random_thing_in_room(ThingClass tngclass, ThingModel tngmodel
 
         MapSlabCoord slb_x = slb_num_decode_x(current_slb);
         MapSlabCoord slb_y = slb_num_decode_y(current_slb);
-        
+
         unsigned char subtile = GAME_RANDOM(STL_PER_SLB_2D);
 
         for (size_t j = 0; j < STL_PER_SLB_2D; j++)
@@ -2310,13 +2310,13 @@ long count_player_creatures_of_model(PlayerNumber plyr_idx, int crmodel)
     }
     TbBool is_spec_digger = (crmodel > 0) && creature_kind_is_for_dungeon_diggers_list(plyr_idx, crmodel);
     long count = 0;
-    if (((crmodel > 0) && (!is_creature_model_wildcard(crmodel)) && !is_spec_digger) || 
-        (crmodel == CREATURE_ANY) || (crmodel == CREATURE_NOT_A_DIGGER)) 
+    if (((crmodel > 0) && (!is_creature_model_wildcard(crmodel)) && !is_spec_digger) ||
+        (crmodel == CREATURE_ANY) || (crmodel == CREATURE_NOT_A_DIGGER))
     {
         count += count_player_list_creatures_with_filter(dungeon->creatr_list_start, filter, &param);
     }
-    if (((crmodel > 0) && (!is_creature_model_wildcard(crmodel)) && is_spec_digger) || 
-        (crmodel == CREATURE_ANY) || (crmodel == CREATURE_DIGGER)) 
+    if (((crmodel > 0) && (!is_creature_model_wildcard(crmodel)) && is_spec_digger) ||
+        (crmodel == CREATURE_ANY) || (crmodel == CREATURE_DIGGER))
     {
         count += count_player_list_creatures_with_filter(dungeon->digger_list_start, filter, &param);
     }
@@ -2529,7 +2529,7 @@ struct Thing *get_player_list_nth_creature_of_model_on_territory(long thing_idx,
             {
                 match = 1;
             }
-        } 
+        }
         else if (friendly == 0)
         {
             if (players_are_enemies(thing->owner,slbwnr))
@@ -2547,7 +2547,7 @@ struct Thing *get_player_list_nth_creature_of_model_on_territory(long thing_idx,
 
         if ((thing_matches_model(thing, crmodel)) && (match == 1))
         {
-            nth_creature = thing; 
+            nth_creature = thing;
             crtr_idx--;
         }
         // Per creature code ends
@@ -3293,7 +3293,7 @@ TbBool update_thing(struct Thing *thing)
                 {
                     thing->veloc_base.z.val = thing->veloc_base.z.val * (256 - thing->inertia_air) / 256;
                 }
-                else 
+                else
                 {
                     if (thing_above_flight_altitude(thing) && ((thing->alloc_flags & TAlF_IsControlled) == 0))
                     {
@@ -3375,37 +3375,35 @@ HitTargetFlags hit_type_to_hit_targets(long hit_type)
     {
     case THit_All:
     case THit_CrtrsNObjctsNShot:
-        return HitTF_EnemyCreatures|HitTF_AlliedCreatures|HitTF_OwnedCreatures|HitTF_ArmourAffctdCreatrs|HitTF_PreventDmgCreatrs|
-            HitTF_EnemySoulContainer|HitTF_AlliedSoulContainer|HitTF_OwnedSoulContainer|
-            HitTF_AnyWorkshopBoxes|HitTF_AnySpellbooks|HitTF_AnyDnSpecialBoxes|
-            HitTF_EnemyShotsCollide|HitTF_AlliedShotsCollide|HitTF_OwnedShotsCollide|
-            HitTF_EnemyDestructibleTraps|HitTF_AlliedDestructibleTraps|HitTF_OwnedDestructibleTraps|
-            HitTF_AnyFoodObjects|HitTF_AnyGoldPiles;
+        return HitTF_CreatureAllOwners | HitTF_ArmourAffctdCreatrs | HitTF_PreventDmgCreatrs |
+            HitTF_SoulContainerAllOwners | HitTF_ShotAllOwners |
+            HitTF_TrapDestructibleAllOwners |
+            HitTF_WorkshopBox | HitTF_Spellbook | HitTF_SpecialBox |
+            HitTF_Food | HitTF_GoldPile;
     case THit_CrtrsNObjcts:
-        return HitTF_EnemyCreatures|HitTF_AlliedCreatures|HitTF_OwnedCreatures|HitTF_ArmourAffctdCreatrs|HitTF_PreventDmgCreatrs|
-            HitTF_EnemySoulContainer|HitTF_AlliedSoulContainer|HitTF_OwnedSoulContainer|
-            HitTF_AnyWorkshopBoxes|HitTF_AnySpellbooks|HitTF_AnyDnSpecialBoxes|
-            HitTF_EnemyDestructibleTraps|HitTF_AlliedDestructibleTraps|HitTF_OwnedDestructibleTraps|
-            HitTF_AnyFoodObjects|HitTF_AnyGoldPiles;
+        return HitTF_CreatureAllOwners | HitTF_ArmourAffctdCreatrs | HitTF_PreventDmgCreatrs |
+            HitTF_SoulContainerAllOwners |
+            HitTF_WorkshopBox | HitTF_Spellbook | HitTF_SpecialBox |
+            HitTF_TrapDestructibleAllOwners |
+            HitTF_Food | HitTF_GoldPile;
     case THit_CrtrsOnly:
-        return HitTF_EnemyCreatures|HitTF_AlliedCreatures|HitTF_OwnedCreatures|HitTF_ArmourAffctdCreatrs;
+        return HitTF_CreatureAllOwners | HitTF_ArmourAffctdCreatrs;
     case THit_CrtrsNObjctsNotOwn:
-        return HitTF_EnemyCreatures|HitTF_AlliedCreatures|HitTF_ArmourAffctdCreatrs|
-        HitTF_EnemySoulContainer|HitTF_AlliedSoulContainer|
-        HitTF_AnyWorkshopBoxes|HitTF_AnySpellbooks|HitTF_AnyDnSpecialBoxes|
-        HitTF_EnemyDestructibleTraps | HitTF_AlliedDestructibleTraps|
-        HitTF_AnyFoodObjects|HitTF_AnyGoldPiles;
+        return HitTF_CreatureEnemy | HitTF_CreatureAllied | HitTF_ArmourAffctdCreatrs |
+            HitTF_SoulContainerEnemy | HitTF_SoulContainerAllied |
+            HitTF_WorkshopBox | HitTF_Spellbook | HitTF_SpecialBox |
+            HitTF_TrapEnemyDestructible | HitTF_TrapAlliedDestructible |
+            HitTF_Food | HitTF_GoldPile;
     case THit_CrtrsOnlyNotOwn:
-        return HitTF_EnemyCreatures|HitTF_AlliedCreatures|HitTF_ArmourAffctdCreatrs;
+        return HitTF_CreatureEnemy | HitTF_CreatureAllied | HitTF_ArmourAffctdCreatrs;
     case THit_CrtrsNotArmourNotOwn:
-        return HitTF_EnemyCreatures|HitTF_AlliedCreatures;
+        return HitTF_CreatureEnemy | HitTF_CreatureAllied;
     case THit_HeartOnly:
-        return HitTF_EnemySoulContainer|HitTF_AlliedSoulContainer|HitTF_OwnedSoulContainer;
+        return HitTF_SoulContainerAllOwners;
     case THit_HeartOnlyNotOwn:
-        return HitTF_EnemySoulContainer|HitTF_AlliedSoulContainer;
+        return HitTF_SoulContainerEnemy | HitTF_SoulContainerAllied;
     case THit_TrapsAll:
-        return HitTF_EnemyDestructibleTraps|HitTF_AlliedDestructibleTraps|HitTF_OwnedDestructibleTraps|
-            HitTF_OwnedDeployedTraps|HitTF_AlliedDeployedTraps|HitTF_EnemyDeployedTraps;
+        return HitTF_TrapAllOwners;
     case THit_None:
         return HitTF_None;
     default:
@@ -3429,23 +3427,23 @@ TbBool thing_is_shootable(const struct Thing *thing, PlayerNumber shot_owner, Hi
         if ((get_creature_model_flags(thing) & CMF_IsSpectator) != 0)
             return false;
         // Armour spell may prevent from hitting
-        if ((hit_targets & HitTF_ArmourAffctdCreatrs) == 0) {
+        if (!flag_is_set(hit_targets, HitTF_ArmourAffctdCreatrs)) {
             if (creature_affected_by_spell(thing, SplK_Armour))
                 return false;
         }
         // Prevent Damage flag may be either respected or ignored
-        if ((hit_targets & HitTF_PreventDmgCreatrs) == 0) {
+        if (!flag_is_set(hit_targets, HitTF_PreventDmgCreatrs)) {
             struct CreatureControl* cctrl = creature_control_get_from_thing(thing);
             if ((cctrl->flgfield_1 & CCFlg_PreventDamage) != 0)
                 return false;
         }
         if (shot_owner == thing->owner) {
-            return ((hit_targets & HitTF_OwnedCreatures) != 0);
+            return flag_is_set(hit_targets, HitTF_CreatureOwned);
         }
         if ((shot_owner < 0) || players_are_enemies(shot_owner, thing->owner)) {
-            return ((hit_targets & HitTF_EnemyCreatures) != 0);
+            return flag_is_set(hit_targets, HitTF_CreatureEnemy);
         }
-        return ((hit_targets & HitTF_AlliedCreatures) != 0);
+        return flag_is_set(hit_targets, HitTF_CreatureAllied);
     }
     if (thing_is_shot(thing))
     {
@@ -3453,12 +3451,12 @@ TbBool thing_is_shootable(const struct Thing *thing, PlayerNumber shot_owner, Hi
         if (shotst->model_flags & ShMF_CanCollide)
         {
             if (shot_owner == thing->owner) {
-                return ((hit_targets & HitTF_OwnedShotsCollide) != 0);
+                return flag_is_set(hit_targets, HitTF_ShotOwned);
             }
             if ((shot_owner < 0) || players_are_enemies(shot_owner, thing->owner)) {
-                return ((hit_targets & HitTF_EnemyShotsCollide) != 0);
+                return flag_is_set(hit_targets, HitTF_ShotEnemy);
             }
-            return ((hit_targets & HitTF_AlliedShotsCollide) != 0);
+            return flag_is_set(hit_targets, HitTF_ShotAllied);
         }
         return false;
     }
@@ -3467,78 +3465,78 @@ TbBool thing_is_shootable(const struct Thing *thing, PlayerNumber shot_owner, Hi
         if (thing_is_dungeon_heart(thing))
         {
             if (shot_owner == thing->owner) {
-                return ((hit_targets & HitTF_OwnedSoulContainer) != 0);
+                return flag_is_set(hit_targets, HitTF_SoulContainerOwned);
             }
             if ((shot_owner < 0) || players_are_enemies(shot_owner, thing->owner)) {
-                return ((hit_targets & HitTF_EnemySoulContainer) != 0);
+                return flag_is_set(hit_targets, HitTF_SoulContainerEnemy);
             }
-            return ((hit_targets & HitTF_AlliedSoulContainer) != 0);
+            return flag_is_set(hit_targets, HitTF_SoulContainerAllied);
         }
         if (object_is_growing_food(thing) ||
            (object_is_mature_food(thing) && !is_thing_directly_controlled(thing) && !is_thing_passenger_controlled(thing)))
         {
-            return ((hit_targets & HitTF_AnyFoodObjects) != 0);
+            return flag_is_set(hit_targets, HitTF_Food);
         }
         if (thing_is_workshop_crate(thing))
         {
-            return ((hit_targets & HitTF_AnyWorkshopBoxes) != 0);
+            return flag_is_set(hit_targets, HitTF_WorkshopBox);
         }
         if (thing_is_spellbook(thing))
         {
-            return ((hit_targets & HitTF_AnySpellbooks) != 0);
+            return flag_is_set(hit_targets, HitTF_Spellbook);
         }
         if (thing_is_special_box(thing))
         {
-            return ((hit_targets & HitTF_AnyDnSpecialBoxes) != 0);
+            return flag_is_set(hit_targets, HitTF_SpecialBox);
         }
         if (thing_is_gold_hoard(thing))
         {
-            return ((hit_targets & HitTF_AnyGoldHoards) != 0);
+            return flag_is_set(hit_targets, HitTF_GoldHoard);
         }
         if (object_is_gold_pile(thing))
         {
-            return ((hit_targets & HitTF_AnyGoldPiles) != 0);
+            return flag_is_set(hit_targets, HitTF_GoldPile);
         }
         //TODO implement hitting decorations flag
         /*if (object_is_decoration(thing))
         {
-            return ((hit_targets & HitTF_AnyDecorations) != 0);
+            return flag_is_set(hit_targets, HitTF_AnyDecorations);
         }*/
         return false;
     }
     if (thing_is_deployed_door(thing))
     {
         if (shot_owner == thing->owner) {
-            return ((hit_targets & HitTF_OwnedDeployedDoors) != 0);
+            return flag_is_set(hit_targets, HitTF_DoorOwned);
         }
         if ((shot_owner < 0) || players_are_enemies(shot_owner, thing->owner)) {
-            return ((hit_targets & HitTF_EnemyDeployedDoors) != 0);
+            return flag_is_set(hit_targets, HitTF_DoorEnemy);
         }
-        return ((hit_targets & HitTF_AlliedDeployedDoors) != 0);
+        return flag_is_set(hit_targets, HitTF_DoorAllied);
     }
     if (thing_is_deployed_trap(thing))
     {
         if (thing_is_destructible_trap(thing) > 0)
         {
             if (shot_owner == thing->owner) {
-                return ((hit_targets & HitTF_OwnedDestructibleTraps) != 0);
+                return flag_is_set(hit_targets, HitTF_TrapOwnedDestructible);
             }
             if ((shot_owner < 0) || players_are_enemies(shot_owner, thing->owner)) {
-                return ((hit_targets & HitTF_EnemyDestructibleTraps) != 0);
+                return flag_is_set(hit_targets, HitTF_TrapEnemyDestructible);
             }
-            return ((hit_targets & HitTF_AlliedDestructibleTraps) != 0);
+            return flag_is_set(hit_targets, HitTF_TrapAlliedDestructible);
         }
         if (shot_owner == thing->owner) {
-            return ((hit_targets & HitTF_OwnedDeployedTraps) != 0);
+            return flag_is_set(hit_targets, HitTF_TrapOwned);
         }
         if ((shot_owner < 0) || players_are_enemies(shot_owner, thing->owner)) {
-            return ((hit_targets & HitTF_EnemyDeployedTraps) != 0);
+            return flag_is_set(hit_targets, HitTF_TrapEnemy);
         }
-        return ((hit_targets & HitTF_AlliedDeployedTraps) != 0);
+        return flag_is_set(hit_targets, HitTF_TrapAllied);
     }
     if (thing_is_dead_creature(thing))
     {
-        return ((hit_targets & HitTF_CreatureDeadBodies) != 0);
+        return flag_is_set(hit_targets, HitTF_CreatureDeadBodies);
     }
     return false;
 }
@@ -4138,21 +4136,21 @@ struct Thing *get_nearest_thing_at_position(MapSubtlCoord stl_x, MapSubtlCoord s
   struct Thing *thing;
   unsigned char n,k = 0;
   struct Thing *result = NULL;
-  MapSubtlCoord x,y; 
+  MapSubtlCoord x,y;
   do
   {
     n = 0;
-    y = stl_y + k;  
+    y = stl_y + k;
     if ( (y >= 0) && (y < gameadd.map_subtiles_y) )
     {
       do
       {
-        x = stl_x + n;  
+        x = stl_x + n;
         if ( (x >= 0) && (x < gameadd.map_subtiles_x) )
         {
           struct Map *blk = get_map_block_at(x, y);
           thing = thing_get(get_mapwho_thing_index(blk));
-          while (!thing_is_invalid(thing)) 
+          while (!thing_is_invalid(thing))
           {
             TRACE_THING(thing);
             long NewDistance = chessboard_distance(stl_x, stl_y, thing->mappos.x.stl.num, thing->mappos.y.stl.num);
@@ -4435,7 +4433,7 @@ struct Thing* get_timebomb_target(struct Thing *creatng)
     MapCoordDelta dist, new_dist;
     struct Thing* thing;
     struct StructureList* slist = get_list_for_thing_class(TCls_Creature);
-    if (slist != NULL) 
+    if (slist != NULL)
     {
         dist = LONG_MAX;
         unsigned long i = slist->index;

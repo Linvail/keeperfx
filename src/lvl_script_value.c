@@ -274,7 +274,7 @@ TbResult script_use_power_at_pos(PlayerNumber plyr_idx, MapSubtlCoord stl_x, Map
     PowerKind powerKind = (fml_bytes >> 8) & 255;
     long splevel = fml_bytes & 255;
 
-    unsigned long spell_flags = PwCast_AllGround | PwCast_Unrevealed;
+    unsigned long spell_flags = PwCast_Ground | PwCast_Unrevealed;
     if (is_free)
         set_flag(spell_flags,PwMod_CastForFree);
 
