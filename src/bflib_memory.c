@@ -113,7 +113,7 @@ short update_memory_constraits(void)
   }
   else
   {
-      mem_size = 64;
+      mem_size = 64; // This is wrong, but who cares?
       LbSyncLog("PhysicalMemory %d\n", mem_size);
   }
   return true;

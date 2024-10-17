@@ -111,6 +111,7 @@ enum {
     CPUID_FAMILY_486            = 0x04,
     CPUID_FAMILY_PENTIUM        = 0x05,
     CPUID_FAMILY_P2             = 0x06,
+    CPUID_FAMILY_P4_K8          = 0x0F, // Intel Pentium 4 or AMD K8/Hammer
 };
 
 /* Vendor-strings. */
