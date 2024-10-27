@@ -95,6 +95,7 @@
 #include "thing_traps.h"
 
 #include "keeperfx.hpp"
+#include "creature/creature_tree_api.h"
 #include "post_inc.h"
 
 #ifdef __cplusplus

@@ -72,3 +72,9 @@ target_link_libraries(minizip PUBLIC ZLIB::ZLIB)
 target_include_directories(minizip INTERFACE "zlib/contrib/minizip")
 target_link_libraries(keeperfx PRIVATE minizip)
 target_link_libraries(keeperfx_hvlog PRIVATE minizip)
+
+## Add THST
+add_library(THST INTERFACE)
+target_include_directories(THST INTERFACE "THST/include")
+target_link_libraries(keeperfx PRIVATE THST)
+target_link_libraries(keeperfx_hvlog PRIVATE THST)

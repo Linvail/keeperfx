@@ -58,11 +58,13 @@ add_executable(keeperfx ${KEEPERFX_SOURCES_C} ${KEEPERFX_SOURCES_CXX})
 
 target_compile_definitions(keeperfx PUBLIC BFDEBUG_LEVEL=0)
 target_sources(keeperfx PRIVATE "res/keeperfx_stdres.rc")
+target_include_directories(keeperfx PUBLIC "src")
 
 add_executable(keeperfx_hvlog ${KEEPERFX_SOURCES_C} ${KEEPERFX_SOURCES_CXX})
 
 target_compile_definitions(keeperfx_hvlog PUBLIC BFDEBUG_LEVEL=10)
 target_sources(keeperfx_hvlog PRIVATE "res/keeperfx_stdres.rc")
+target_include_directories(keeperfx_hvlog PUBLIC "src")
 
 # todo: Ideally we should not suppress so many kinds of warning.
 # Some of them should be fixed in code.
@@ -222,3 +224,5 @@ target_link_libraries(keeperfx_hvlog
     PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
 target_link_libraries(keeperfx_hvlog PRIVATE cpuid::cpuid)
 target_link_libraries(keeperfx_hvlog PUBLIC ZLIB::ZLIB)
+
+add_subdirectory(tests)
