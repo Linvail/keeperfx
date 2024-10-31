@@ -129,6 +129,8 @@
   #include "ftests/ftest.h"
 #endif
 
+#include "time_helper.h"
+
 #include "post_inc.h"
 
 #ifdef _MSC_VER
@@ -3408,7 +3410,25 @@ void gameplay_loop_logic()
     LbWindowsControl();
     input_eastegg();
     input();
+
+    timespec startTime;
+    clock_gettime(0, &startTime);
+
     update();
+
+    timespec endTime;
+    clock_gettime(0, &endTime);
+    SYNCDBG(0, "[Turn %lu] update() in main.cpp spent %lu nanoseconds.", game.play_gameturn, endTime.tv_nsec - startTime.tv_nsec);
+    if (game.play_gameturn >= 100)
+    {
+        static uint64_t total_microseconds = 0;
+        static uint64_t times = 0;
+        times += 1;
+        total_microseconds += static_cast<uint64_t>( ( endTime.tv_nsec - startTime.tv_nsec ) / 1000 );
+        uint64_t average = total_microseconds / times;
+        SYNCDBG(0, "Average (%d turns) spent time of update() in microseconds: %lu", game.play_gameturn - 99, average);
+    }
+
     frametime_end_measurement(Frametime_Logic);
 
     if(game.frame_step)
@@ -3488,8 +3508,40 @@ void keeper_gameplay_loop(void)
     while ((!quit_game) && (!exit_keeper))
     {
         frametime_start_measurement(Frametime_FullFrame);
+
+        timespec startTime;
+        //clock_gettime(0, &startTime);
+
         gameplay_loop_logic();
+
+        timespec endTime;
+        clock_gettime(0, &endTime);
+        /*SYNCDBG(0, "[Turn %lu] gameplay_loop_logic() spent %lu nanoseconds.", game.play_gameturn, endTime.tv_nsec - startTime.tv_nsec);
+        if (game.play_gameturn >= 100)
+        {
+            static uint64_t total_microseconds = 0;
+            total_microseconds += static_cast<uint64_t>( ( endTime.tv_nsec - startTime.tv_nsec ) / 1000 );
+            if (total_microseconds != 0)
+            {
+                total_microseconds /= 2;
+            }
+            SYNCDBG(0, "Average (%d turns) spent time of gameplay_loop_logic in microseconds: %lu", game.play_gameturn - 99, total_microseconds);
+        }*/
+
         gameplay_loop_draw();
+
+        clock_gettime(0, &startTime);
+        SYNCDBG(0, "[Turn %lu] gameplay_loop_draw() spent %lu nanoseconds.", game.play_gameturn, startTime.tv_nsec - endTime.tv_nsec);
+        if (game.play_gameturn >= 100)
+        {
+            static uint64_t total_microseconds = 0;
+            static uint64_t times = 0;
+            times += 1;
+            total_microseconds += static_cast<uint64_t>( ( startTime.tv_nsec - endTime.tv_nsec ) / 1000 );
+            uint64_t average = total_microseconds / times;
+            SYNCDBG(0, "Average (%d turns) spent time of gameplay_loop_draw in microseconds: %lu", game.play_gameturn - 99, average);
+        }
+
         gameplay_loop_timestep();
         frametime_end_measurement(Frametime_FullFrame);
     } // end while
