@@ -610,7 +610,7 @@ void draw_flame_breath(struct Coord3d *pos1, struct Coord3d *pos2, long delta_st
             delta_y = dist_y * delta_y / (dist_x + dist_y + dist_z);
             delta_z = dist_z * delta_z / (dist_x + dist_y + dist_z);
         }
-        
+
         int sprsize = 0;
         int delta_size = 0;
 
@@ -3426,7 +3426,7 @@ void gameplay_loop_logic()
         times += 1;
         total_microseconds += static_cast<uint64_t>( ( endTime.tv_nsec - startTime.tv_nsec ) / 1000 );
         uint64_t average = total_microseconds / times;
-        SYNCDBG(0, "Average (%d turns) spent time of update() in microseconds: %lu", game.play_gameturn - 99, average);
+        SYNCDBG(0, "Average (%d times) spent time of update() in microseconds: %lu", times, average);
     }
 
     frametime_end_measurement(Frametime_Logic);
@@ -3539,7 +3539,7 @@ void keeper_gameplay_loop(void)
             times += 1;
             total_microseconds += static_cast<uint64_t>( ( startTime.tv_nsec - endTime.tv_nsec ) / 1000 );
             uint64_t average = total_microseconds / times;
-            SYNCDBG(0, "Average (%d turns) spent time of gameplay_loop_draw in microseconds: %lu", game.play_gameturn - 99, average);
+            SYNCDBG(0, "Average (%d times) spent time of gameplay_loop_draw in microseconds: %lu", times, average);
         }
 
         gameplay_loop_timestep();
