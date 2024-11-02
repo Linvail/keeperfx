@@ -25,3 +25,9 @@ docs/latex
 *.d
 *.Tpo
 .header_checksum
+/deps/enet
+/deps/zlib
+/deps/spng
+/deps/astronomy
+/deps/centijson
+/deps/*.tar.gz

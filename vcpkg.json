@@ -1,11 +1,8 @@
 {
     "dependencies": [
-        "enet",
         "sdl2",
         "sdl2-image",
         "sdl2-mixer",
-        "sdl2-net",
-        "zlib",
-        "cpuid"
+        "sdl2-net"
     ]
 }
