@@ -64,7 +64,7 @@ bool CreatureTreeManager::getNearbyCreaturesInVisualRange
     {
         Point<int> pos(creature->mappos);
         std::vector<CreatureNode> nodes;
-        bool ok = mRTree.nearest(pos.data, visulRange, std::back_inserter(nodes));
+        ok = mRTree.nearest(pos.data, visulRange, std::back_inserter(nodes));
 
         if (!ok)
         {
@@ -76,7 +76,7 @@ bool CreatureTreeManager::getNearbyCreaturesInVisualRange
         {
             int center[2];
             node.bbox.center(center);
-            const uint64_t distance = hypot(center[0] - pos.x, center[1] - pos.y);
+            const uint64_t distance = hypot(center[0] - pos.mX, center[1] - pos.mY);
             nearbyCreatures.push_back({ node.index, distance });
         }
         mNearbyCreatures.insert({ creature->index, nearbyCreatures });

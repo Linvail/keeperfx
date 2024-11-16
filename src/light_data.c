@@ -474,7 +474,7 @@ void light_remove_light_from_list(struct Light *lgt, struct StructureList *list)
 {
   if ( list->count == 0 )
   {
-      ERRORLOG("List %lu has no structures", list->index);
+      ERRORLOG("List %u has no structures", list->index);
       return;
   }
   TbBool Removed = false;
@@ -2054,7 +2054,7 @@ static char light_render_light(struct Light* lgt)
       short intensity_per_tile = intensity / subtile_radius;
       if (intensity_per_tile == 0)
           intensity_per_tile++;
-        
+
     lighting_tables_idx = ((intensity - (game.lish.global_ambient_light << 8)) / intensity_per_tile) + 1;
     if ( lighting_tables_idx > 31 )
       lighting_tables_idx = 31;

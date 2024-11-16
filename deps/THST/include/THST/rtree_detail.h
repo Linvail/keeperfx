@@ -83,7 +83,7 @@ namespace spatial {
 
 			Node() : level(0) {}
 
-			Node(int level) : count(0), level(level) {}
+			Node(int aLevel) : count(0), level(aLevel) {}
 
 			// Not a leaf, but a internal/branch node
 			bool isBranch() const { return (level > 0); }

@@ -60,7 +60,7 @@ struct SpatialPredicate {
   typedef spatial::BoundingBox<T, Dimension> box_t;
   typedef OperationTag op_t;
 
-  SpatialPredicate(const box_t &bbox) : bbox(bbox) {}
+  SpatialPredicate(const box_t &aBbox) : bbox(aBbox) {}
   inline bool operator()(const box_t &valueBBox) const {
     return detail::checkPredicate<T, Dimension, OperationTag>(bbox, valueBBox);
   }

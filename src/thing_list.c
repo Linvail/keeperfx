@@ -1785,7 +1785,7 @@ struct Thing* get_nth_creature_with_filter(Thing_Maximizer_Filter filter, MaxTng
     struct Thing* source = thing_get(param->num1);
     if (thing_is_invalid(source))
     {
-        ERRORLOG("Invalid input creature index: %d", param->num1);
+        ERRORLOG("Invalid input creature index: %ld", param->num1);
         return INVALID_THING;
     }
 

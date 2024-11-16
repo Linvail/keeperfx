@@ -225,7 +225,7 @@ namespace spatial {
 			void setQueryTargetLevel(int level);
 
 			/// @see spatial::SpatialPredicate for available predicates.
-			template <typename BoxPredicate> 
+			template <typename BoxPredicate>
 			bool query(const BoxPredicate&predicate) const;
 			template <typename BoxPredicate, typename OutIter>
 			size_t query(const BoxPredicate&predicate, OutIter out_it) const;
@@ -328,8 +328,8 @@ namespace spatial {
 				node_ptr_type node;
 				count_type index;
 
-				NearestDistance(node_ptr_type node, RealType distance, count_type index = 0xFFFFFFF) :
-					node(node), distance(distance), index(index)
+				NearestDistance(node_ptr_type aNode, RealType aDistance, count_type aIndex = 0xFFFFFFF) :
+					node(aNode), distance(aDistance), index(aIndex)
 				{
 				}
 
@@ -663,7 +663,7 @@ namespace spatial {
 		template <typename OutIter>
 	size_t TREE_QUAL::k_nearest(const T point[Dimension], uint32_t k, OutIter out_it) const {
 		size_t foundCount = 0;
-		
+
 		// incremental nearest neighbor search
 		std::priority_queue<NearestDistance> queue;
 
@@ -898,13 +898,13 @@ namespace spatial {
 				// Child was split. The old branches are now re-partitioned to two nodes
 				// so we have to re-calculate the bounding boxes of each node
 				node.bboxes[index] = node.children[index]->cover();
-				branch_type branch;
-				branch.child = otherNode;
-				branch.bbox = otherNode->cover();
+				branch_type localBranch = {};
+				localBranch.child = otherNode;
+				localBranch.bbox = otherNode->cover();
 
 				// The old node is already a child of node. Now add the newly-created
 				// node to node as well. node might be split because of that.
-				return addBranch(branch, node, &newNode);
+				return addBranch(localBranch, node, &newNode);
 			}
 #if SPATIAL_TREE_ALLOCATOR == SPATIAL_TREE_DEFAULT_ALLOCATOR
 			else if (allocator_type::is_overflowable) {
@@ -960,16 +960,16 @@ namespace spatial {
 			// Grow tree taller and new root
 			node_ptr_type newRoot = detail::allocate(m_allocator, m_root->level + 1);
 
-			branch_type branch;
+			branch_type localBranch = {};
 			// add old root node as a child of the new root
-			branch.bbox = m_root->cover();
-			branch.child = m_root;
-			addBranch(branch, *newRoot, NULL);
+			localBranch.bbox = m_root->cover();
+			localBranch.child = m_root;
+			addBranch(localBranch, *newRoot, NULL);
 
 			// add the split node as a child of the new root
-			branch.bbox = newNode->cover();
-			branch.child = newNode;
-			addBranch(branch, *newRoot, NULL);
+			localBranch.bbox = newNode->cover();
+			localBranch.child = newNode;
+			addBranch(localBranch, *newRoot, NULL);
 			// set the new root as the root node
 			m_root = newRoot;
 		}
@@ -1086,10 +1086,10 @@ namespace spatial {
 
 		// Load the branch buffer
 		for (size_t index = 0; index < max_child_items; ++index) {
-			branch_type &branch = branchVars.branches[index];
-			branch.bbox = node.bboxes[index];
-			branch.value = node.values[index];
-			branch.child = node.children[index];
+			branch_type &localBranch = branchVars.branches[index];
+			localBranch.bbox = node.bboxes[index];
+			localBranch.value = node.values[index];
+			localBranch.child = node.children[index];
 		}
 		branchVars.branches[max_child_items] = branch;
 
@@ -1116,8 +1116,9 @@ namespace spatial {
 	TREE_TEMPLATE
 		void TREE_QUAL::choosePartition(PartitionVars &partitionVars) const {
 		real_type biggestDiff;
-		count_type chosen;
-		int group, betterGroup;
+		count_type chosen = {};
+		int group = 0;
+		int betterGroup = 0;
 
 		pickSeeds(partitionVars);
 
@@ -1200,7 +1201,7 @@ namespace spatial {
 
 	TREE_TEMPLATE
 		void TREE_QUAL::pickSeeds(PartitionVars &partitionVars) const {
-		count_type seed0, seed1;
+		count_type seed0 = {}, seed1 = {};
 		real_type worst, waste;
 		real_type area[max_child_items + 1];
 
@@ -1331,7 +1332,7 @@ namespace spatial {
 		{
 			for (count_type index = 0; index < node->count; ++index) {
 				if (node->values[index] == value) {
-					node->disconnectBranch(index); 
+					node->disconnectBranch(index);
 					return true;
 				}
 			}

@@ -101,8 +101,8 @@ namespace spatial {
 		BBOX_QUAL::BoundingBox() {}
 
 	BBOX_TEMPLATE
-		BBOX_QUAL::BoundingBox(const T min[Dimension], const T max[Dimension]) {
-		set(min, max);
+		BBOX_QUAL::BoundingBox(const T aMin[Dimension], const T aMax[Dimension]) {
+		set(aMin, aMax);
 	}
 
 	BBOX_TEMPLATE
@@ -114,11 +114,11 @@ namespace spatial {
 	}
 
 	BBOX_TEMPLATE
-		void BBOX_QUAL::set(const T min[Dimension], const T max[Dimension]) {
+		void BBOX_QUAL::set(const T aMin[Dimension], const T aMax[Dimension]) {
 		// loop will get unrolled
 		for (int axis = 0; axis < Dimension; ++axis) {
-			this->min[axis] = min[axis];
-			this->max[axis] = max[axis];
+			this->min[axis] = aMin[axis];
+			this->max[axis] = aMax[axis];
 		}
 		checkValid();
 	}
@@ -179,7 +179,7 @@ namespace spatial {
 		return true;
 	}
 
-	
+
 	BBOX_TEMPLATE
 		template <typename RealType>
 		bool BBOX_QUAL::intersectsRay(const RealType rayOrigin[Dimension], const RealType rayDirection[Dimension]) const {
@@ -200,8 +200,8 @@ namespace spatial {
 			const RealType invDir =(RealType)1.0f / rayDirection[index];
 			RealType deltaMin = (min[index] - rayOrigin[index]) * invDir;
 			RealType deltaMax = (max[index] - rayOrigin[index]) * invDir;
-			
-			if (deltaMin > deltaMax) 
+
+			if (deltaMin > deltaMax)
 				std::swap(deltaMin, deltaMax);
 
 			if ((tMin > deltaMax) || (deltaMin > tMax))

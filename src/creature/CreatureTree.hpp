@@ -18,21 +18,21 @@ template <typename T> struct Point
 		T data[2];
 		struct
 		{
-			T x, y;
+			T mX, mY;
 		};
 	};
 
 	Point(const Coord3d& coord)
-		: x(static_cast<T>( coord.x.val ))
-		, y(static_cast<T>( coord.y.val ))
+		: mX(static_cast<T>( coord.x.val ))
+		, mY(static_cast<T>( coord.y.val ))
 	{
 	}
 
 	template <typename Y>
 	Point(Y x, Y y)
 	{
-		this->x = static_cast<T>( x );
-		this->y = static_cast<T>( y );
+		this->mX = static_cast<T>( x );
+		this->mY = static_cast<T>( y );
 	}
 };
 
