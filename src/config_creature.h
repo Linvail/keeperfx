@@ -147,7 +147,7 @@ enum InstancePropertiesFlags {
     InstPF_RangedDebuff       = 0x0010,
     InstPF_Dangerous          = 0x0020,
     InstPF_Destructive        = 0x0040,
-    InstPF_Quick              = 0x0080,
+    InstPF_Unused             = 0x0080, //Quick
     InstPF_Disarming          = 0x0100,
     InstPF_UsesSwipe          = 0x0200,
     InstPF_RangedBuff         = 0x0400,
@@ -278,6 +278,7 @@ struct CreatureStats *creature_stats_get(ThingModel crstat_idx);
 struct CreatureStats *creature_stats_get_from_thing(const struct Thing *thing);
 TbBool creature_stats_invalid(const struct CreatureStats *crstat);
 void check_and_auto_fix_stats(void);
+void init_creature_model_graphics(void);
 const char *creature_code_name(ThingModel crmodel);
 long creature_model_id(const char * name);
 const char *creature_own_name(const struct Thing *creatng);

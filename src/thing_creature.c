@@ -103,10 +103,7 @@ extern "C" {
 
 /******************************************************************************/
 int creature_swap_idx[CREATURE_TYPES_MAX];
-
-/******************************************************************************/
-extern struct TbLoadFiles swipe_load_file[];
-extern struct TbSetupSprite swipe_setup_sprites[];
+struct TbSpriteSheet * swipe_sprites = NULL;
 /******************************************************************************/
 /**
  * Returns creature health scaled 0..1000.
@@ -319,12 +316,8 @@ TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *th
 void free_swipe_graphic(void)
 {
     SYNCDBG(6,"Starting");
-    if (game.loaded_swipe_idx != -1)
-    {
-        LbDataFreeAll(swipe_load_file);
-        game.loaded_swipe_idx = -1;
-    }
-    LbSpriteClearAll(swipe_setup_sprites);
+    free_spritesheet(&swipe_sprites);
+    game.loaded_swipe_idx = -1;
 }
 
 TbBool load_swipe_graphic_for_creature(const struct Thing *thing)
@@ -335,40 +328,29 @@ TbBool load_swipe_graphic_for_creature(const struct Thing *thing)
         return true;
     free_swipe_graphic();
     int swpe_idx = crstat->swipe_idx;
-    {
-        struct TbLoadFiles* t_lfile = &swipe_load_file[0];
+    char dat_fname[2048];
+    char tab_fname[2048];
 #ifdef SPRITE_FORMAT_V2
-        sprintf(t_lfile->FName, "data/swipe%02d-%d.dat", swpe_idx, 32);
-        t_lfile++;
-        sprintf(t_lfile->FName, "data/swipe%02d-%d.tab", swpe_idx, 32);
-        t_lfile++;
+    strcpy(dat_fname, prepare_file_fmtpath(FGrp_CmpgConfig, "swipe%02d-32.dat", swpe_idx));
+    strcpy(tab_fname, prepare_file_fmtpath(FGrp_CmpgConfig, "swipe%02d-32.tab", swpe_idx));
+    if (!LbFileExists(dat_fname)) {
+        strcpy(dat_fname, prepare_file_fmtpath(FGrp_StdData, "swipe%02d-32.dat", swpe_idx));
+        strcpy(tab_fname, prepare_file_fmtpath(FGrp_StdData, "swipe%02d-32.tab", swpe_idx));
+    }
 #else
-
-    char* fname = prepare_file_fmtpath(FGrp_CmpgConfig, "swipe%02d.dat",swpe_idx);
-    if (!LbFileExists(fname))
-    {
-        fname = prepare_file_fmtpath(FGrp_StdData, "swipe%02d.dat",swpe_idx);
+    strcpy(dat_fname, prepare_file_fmtpath(FGrp_CmpgConfig, "swipe%02d.dat", swpe_idx));
+    strcpy(tab_fname, prepare_file_fmtpath(FGrp_CmpgConfig, "swipe%02d.tab", swpe_idx));
+    if (!LbFileExists(dat_fname)) {
+        strcpy(dat_fname, prepare_file_fmtpath(FGrp_StdData, "swipe%02d.dat", swpe_idx));
+        strcpy(tab_fname, prepare_file_fmtpath(FGrp_StdData, "swipe%02d.tab", swpe_idx));
     }
-    sprintf(t_lfile->FName, "%s", fname);
-    t_lfile++;
-
-    fname = prepare_file_fmtpath(FGrp_CmpgConfig, "swipe%02d.tab",swpe_idx);
-    if (!LbFileExists(fname))
-    {
-        fname = prepare_file_fmtpath(FGrp_StdData, "swipe%02d.tab",swpe_idx);
-    }
-    sprintf(t_lfile->FName, "%s", fname);
-    t_lfile++;
-
 #endif
-    }
-    if ( LbDataLoadAll(swipe_load_file) )
-    {
+    swipe_sprites = load_spritesheet(dat_fname, tab_fname);
+    if (!swipe_sprites) {
         free_swipe_graphic();
         ERRORLOG("Unable to load swipe graphics for %s",thing_model_name(thing));
         return false;
     }
-    LbSpriteSetupAll(swipe_setup_sprites);
     game.loaded_swipe_idx = swpe_idx;
     return true;
 }
@@ -398,12 +380,13 @@ void draw_swipe_graphic(void)
             lbDisplay.DrawFlags = Lb_SPRITE_TRANSPAR4;
             long n = (int)cctrl->inst_turn * (5 << 8) / cctrl->inst_total_turns;
             long allwidth = 0;
-            long i = (abs(n) >> 8) -1;
+            long i = max(((abs(n) >> 8) -1),0);
             if (i >= SWIPE_SPRITE_FRAMES)
                 i = SWIPE_SPRITE_FRAMES-1;
-            struct TbSprite* sprlist = &swipe_sprites[SWIPE_SPRITES_X * SWIPE_SPRITES_Y * i];
-            struct TbSprite* startspr = &sprlist[1];
-            struct TbSprite* endspr = &sprlist[1];
+            // FIXME: sprites may not be adjacent in the future, causing code below incorrect sprites and possibly crash
+            const struct TbSprite* sprlist = get_sprite(swipe_sprites, SWIPE_SPRITES_X * SWIPE_SPRITES_Y * i);
+            const struct TbSprite* startspr = &sprlist[1];
+            const struct TbSprite* endspr = &sprlist[1];
             for (n=0; n < SWIPE_SPRITES_X; n++)
             {
                 allwidth += endspr->SWidth;
@@ -411,7 +394,7 @@ void draw_swipe_graphic(void)
             }
             int units_per_px = (LbScreenWidth() * 59 / 64) * 16 / allwidth;
             int scrpos_y = (MyScreenHeight * 16 / units_per_px - (startspr->SHeight + endspr->SHeight)) / 2;
-            struct TbSprite *spr;
+            const struct TbSprite *spr;
             int scrpos_x;
             if (myplyr->swipe_sprite_drawLR)
             {
@@ -1592,7 +1575,7 @@ void creature_cast_spell_at_thing(struct Thing *castng, struct Thing *targetng, 
         return;
     }
 
-    SYNCDBG(12,"The %s(%d) fire shot(%s) at %s(%d) with shot level %d, hit type: 0x%X", thing_model_name(castng), castng->index,
+    SYNCDBG(12,"The %s(%u) fire shot(%s) at %s(%u) with shot level %ld, hit type: 0x%02X", thing_model_name(castng), castng->index,
         shot_code_name(spconf->shot_model), thing_model_name(targetng), targetng->index, shot_lvl, hit_type);
     thing_fire_shot(castng, targetng, spconf->shot_model, shot_lvl, hit_type);
 }
@@ -2744,31 +2727,31 @@ struct Thing* cause_creature_death(struct Thing *thing, CrDeathFlags flags)
     if ((flags & CrDed_NoEffects) != 0)
     {
         if ((game.flags_cd & MFlg_DeadBackToPool) != 0)
-            add_creature_to_pool(crmodel, 1, 1);
+            add_creature_to_pool(crmodel, 1);
         delete_thing_structure(thing, 0);
     } else
     if (!creature_model_bleeds(thing->model))
     {
         // Non-bleeding creatures have no flesh explosion effects
         if ((game.flags_cd & MFlg_DeadBackToPool) != 0)
-            add_creature_to_pool(crmodel, 1, 1);
+            add_creature_to_pool(crmodel, 1);
         return creature_death_as_nature_intended(thing);
     } else
     if (creature_affected_by_spell(thing, SplK_Freeze))
     {
         if ((game.flags_cd & MFlg_DeadBackToPool) != 0)
-            add_creature_to_pool(crmodel, 1, 1);
+            add_creature_to_pool(crmodel, 1);
         return thing_death_ice_explosion(thing);
     } else
     if ( (shot_model_makes_flesh_explosion(cctrl->shot_model)) || (cctrl->timebomb_death) )
     {
         if ((game.flags_cd & MFlg_DeadBackToPool) != 0)
-            add_creature_to_pool(crmodel, 1, 1);
+            add_creature_to_pool(crmodel, 1);
         return thing_death_flesh_explosion(thing);
     } else
     {
         if ((game.flags_cd & MFlg_DeadBackToPool) != 0)
-            add_creature_to_pool(crmodel, 1, 1);
+            add_creature_to_pool(crmodel, 1);
         return creature_death_as_nature_intended(thing);
     }
     return INVALID_THING;
@@ -3020,7 +3003,7 @@ long calculate_melee_damage(struct Thing *creatng, short damage_percent)
 {
     const struct CreatureControl* cctrl = creature_control_get_from_thing(creatng);
     const struct CreatureStats* crstat = creature_stats_get_from_thing(creatng);
-    long strength = compute_creature_max_strength(crstat->strength, cctrl->explevel);
+    long strength = calculate_correct_creature_strength(creatng);
     long damage = compute_creature_attack_melee_damage(strength, crstat->luck, cctrl->explevel, creatng);
     if (damage_percent != 0)
     {
@@ -3038,7 +3021,7 @@ long project_melee_damage(const struct Thing *creatng)
 {
     const struct CreatureControl* cctrl = creature_control_get_from_thing(creatng);
     const struct CreatureStats* crstat = creature_stats_get_from_thing(creatng);
-    long strength = compute_creature_max_strength(crstat->strength, cctrl->explevel);
+    long strength = calculate_correct_creature_strength(creatng);
     return project_creature_attack_melee_damage(strength, 0, crstat->luck, cctrl->explevel, creatng);
 }
 
@@ -3069,12 +3052,12 @@ long project_creature_shot_damage(const struct Thing *thing, ThingModel shot_mod
     long damage;
     if ((shotst->model_flags & ShMF_StrengthBased) != 0 )
     {
-        // Project melee damage
-        long strength = compute_creature_max_strength(crstat->strength, cctrl->explevel);
+        // Project melee damage.
+        long strength = calculate_correct_creature_strength(thing);
         damage = project_creature_attack_melee_damage(strength, shotst->damage, crstat->luck, cctrl->explevel, thing);
     } else
     {
-        // Project shot damage
+        // Project shot damage.
         damage = project_creature_attack_spell_damage(shotst->damage, crstat->luck, cctrl->explevel, thing);
     }
     return damage;
@@ -3143,13 +3126,13 @@ void thing_fire_shot(struct Thing *firing, struct Thing *target, ThingModel shot
                 firing->trap.volley_repeat--;
             }
         }
-        struct TrapStats* trapstat = &game.conf.trap_stats[firing->model];
+        struct TrapConfigStats *trapst = get_trap_model_stats(firing->model);
         firing->move_angle_xy = get_angle_xy_to(&firing->mappos, &target->mappos); //visually rotates the trap
-        pos1.x.val += distance_with_angle_to_coord_x(trapstat->shot_shift_x, firing->move_angle_xy + LbFPMath_PI / 2);
-        pos1.y.val += distance_with_angle_to_coord_y(trapstat->shot_shift_x, firing->move_angle_xy + LbFPMath_PI / 2);
-        pos1.x.val += distance_with_angle_to_coord_x(trapstat->shot_shift_y, firing->move_angle_xy);
-        pos1.y.val += distance_with_angle_to_coord_y(trapstat->shot_shift_y, firing->move_angle_xy);
-        pos1.z.val += trapstat->shot_shift_z;
+        pos1.x.val += distance_with_angle_to_coord_x(trapst->shot_shift_x, firing->move_angle_xy + LbFPMath_PI / 2);
+        pos1.y.val += distance_with_angle_to_coord_y(trapst->shot_shift_x, firing->move_angle_xy + LbFPMath_PI / 2);
+        pos1.x.val += distance_with_angle_to_coord_x(trapst->shot_shift_y, firing->move_angle_xy);
+        pos1.y.val += distance_with_angle_to_coord_y(trapst->shot_shift_y, firing->move_angle_xy);
+        pos1.z.val += trapst->shot_shift_z;
 
         max_dexterity = UCHAR_MAX;
         dexterity = max_dexterity/4 + CREATURE_RANDOM(firing, max_dexterity/2);
@@ -3175,7 +3158,7 @@ void thing_fire_shot(struct Thing *firing, struct Thing *target, ThingModel shot
             }
         }
 
-        dexterity = compute_creature_max_dexterity(crstat->dexterity, cctrl->explevel);
+        dexterity = calculate_correct_creature_dexterity(firing);
         max_dexterity = crstat->dexterity + ((crstat->dexterity * cctrl->explevel * game.conf.crtr_conf.exp.dexterity_increase_on_exp) / 100);
 
         pos1.x.val += distance_with_angle_to_coord_x((cctrl->shot_shift_x + (cctrl->shot_shift_x * game.conf.crtr_conf.exp.size_increase_on_exp * cctrl->explevel) / 100), firing->move_angle_xy + LbFPMath_PI / 2);
